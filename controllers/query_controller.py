@@ -51,14 +51,14 @@ async def ask_question(request: QueryRequest, user_id: str) -> QueryResponse:
             set_cache(cache_key, response)
             return response
 
-        # 4. Rerank
-        reranked_chunks = reranker.rerank(request.question, search_results, settings.RERANK_TOP_K)
+        # 4. Bypass Rerank to save memory on free tier
+        reranked_chunks = search_results
 
-        # 5. Check Similarity Threshold (reranker scores are sigmoid-normalized 0-1)
+        # 5. Check Similarity Threshold bypassed since we use RRF score
         best_score = reranked_chunks[0]["score"] if reranked_chunks else 0
-        logger.info(f"Reranked top score: {best_score:.4f}, threshold: {settings.SIMILARITY_THRESHOLD}")
+        logger.info(f"Top RRF score: {best_score:.4f}")
         
-        if not reranked_chunks or best_score < settings.SIMILARITY_THRESHOLD:
+        if not reranked_chunks:
             answer = "I'm sorry, but I couldn't find any relevant information in the uploaded documents to answer your question."
             sources = []
             
@@ -154,12 +154,12 @@ async def ask_question_stream(request: QueryRequest, user_id: str) -> StreamingR
             # 3. Hybrid Search
             search_results = await hybrid_search(request.question, question_embedding, request.top_k)
 
-            # 4. Rerank
-            reranked_chunks = reranker.rerank(request.question, search_results, settings.RERANK_TOP_K)
+            # 4. Bypass Rerank to save memory
+            reranked_chunks = search_results
 
-            # 5. Check Similarity Threshold
+            # 5. Check Similarity Threshold bypassed since we use RRF score
             best_score = reranked_chunks[0]["score"] if reranked_chunks else 0
-            if not reranked_chunks or best_score < settings.SIMILARITY_THRESHOLD:
+            if not reranked_chunks:
                 complete_answer = "I'm sorry, but I couldn't find any relevant information in the uploaded documents to answer your question."
                 
                 for char in complete_answer:

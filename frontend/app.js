@@ -285,7 +285,7 @@ document.getElementById('refresh-docs-btn').addEventListener('click', loadDocume
 
 async function loadDocuments() {
     try {
-        const res = await fetch(`${API_BASE_URL}/api/v1/documents/list`, {
+        const res = await fetch(`${API_BASE_URL}/api/v1/documents`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
