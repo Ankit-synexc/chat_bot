@@ -1,5 +1,5 @@
 // Configure your backend URL here (e.g. for Render)
-const API_BASE_URL = 'https://chat-bot-ados.onrender.com/';
+const API_BASE_URL = 'https://chat-bot-ados.onrender.com';
 
 // State
 let token = localStorage.getItem('access_token');
