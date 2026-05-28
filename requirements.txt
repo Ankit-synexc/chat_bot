@@ -11,6 +11,8 @@ motor
 pymongo
 
 # Machine Learning & Search Core
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.2+cpu
 sentence-transformers
 langchain-text-splitters
 pypdf
