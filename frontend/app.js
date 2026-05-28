@@ -200,7 +200,7 @@ chatForm.addEventListener('submit', async (e) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ question: query, top_k: 5, stream: true })
+            body: JSON.stringify({ question: query, session_id: "default", top_k: 5, stream: true })
         });
         
         if (!res.ok) {
