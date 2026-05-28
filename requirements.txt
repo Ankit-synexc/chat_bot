@@ -1,0 +1,25 @@
+# Web framework and ASGI server
+fastapi
+uvicorn[standard]
+python-multipart
+
+# Environment and configuration
+pydantic-settings
+
+# Database
+motor
+pymongo
+
+# Machine Learning & Search Core
+sentence-transformers
+langchain-text-splitters
+pypdf
+python-docx
+rank_bm25
+
+# LLM Client
+groq
+
+# Auth
+PyJWT
+bcrypt
