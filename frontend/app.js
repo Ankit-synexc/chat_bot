@@ -200,7 +200,7 @@ chatForm.addEventListener('submit', async (e) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ query: query, max_results: 5, stream: true })
+            body: JSON.stringify({ question: query, top_k: 5, stream: true })
         });
         
         if (!res.ok) {
@@ -303,14 +303,14 @@ async function loadDocuments() {
             const li = document.createElement('li');
             li.className = 'doc-item';
             
-            const date = new Date(doc.upload_date).toLocaleDateString();
+            const date = new Date(doc.created_at).toLocaleDateString();
             
             li.innerHTML = `
                 <div class="doc-info">
-                    <h4>${doc.filename}</h4>
-                    <p>ID: ${doc.id} | Chunks: ${doc.chunks_count} | Uploaded: ${date}</p>
+                    <h4>${doc.source_file}</h4>
+                    <p>ID: ${doc.document_id} | Chunks: ${doc.chunk_count} | Uploaded: ${date}</p>
                 </div>
-                <button class="btn btn-small btn-danger" onclick="deleteDocument('${doc.id}')">Delete</button>
+                <button class="btn btn-small btn-danger" onclick="deleteDocument('${doc.document_id}')">Delete</button>
             `;
             docList.appendChild(li);
         });
