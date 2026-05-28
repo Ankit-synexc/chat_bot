@@ -30,18 +30,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to connect to MongoDB: {e}")
         
-    logger.info("Warming up ML models...")
+    logger.info("Skipping ML models warmup to save memory on free tier...")
+    import torch
+    torch.set_num_threads(1)
     models_loaded = False
-    try:
-        # Load embedder into memory
-        embedder.embed_text("warmup")
-        # Load reranker into memory
-        reranker.rerank("warmup", [{"text": "warmup chunk"}], top_k=1)
-        models_loaded = True
-    except Exception as e:
-        logger.error(f"Failed to load ML models: {e}")
-
-    logger.info(f"Startup complete. DB connected: {db_connected}, Models loaded: {models_loaded}")
+    
+    logger.info(f"Startup complete. DB connected: {db_connected}")
     
     yield
     
