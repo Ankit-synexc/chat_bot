@@ -3,7 +3,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class QueryRequest(BaseModel):
-    question: str = Field(..., min_length=3, description="The user's question to answer")
+    question: str = Field(..., min_length=1, description="The user's question to answer")
     top_k: int = Field(default=5, description="Number of top chunks to retrieve before reranking")
     stream: bool = Field(default=False, description="Whether to stream the response back")
 

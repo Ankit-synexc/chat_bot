@@ -114,7 +114,14 @@ chatForm.addEventListener('submit', async (e) => {
 
         if (!res.ok) {
             const errData = await res.json().catch(() => ({}));
-            throw new Error(errData.detail || `Server error (${res.status})`);
+            // FastAPI validation errors return detail as an array of objects
+            let detail = errData.detail;
+            if (Array.isArray(detail)) {
+                detail = detail.map(d => d.msg || JSON.stringify(d)).join(', ');
+            } else if (typeof detail !== 'string') {
+                detail = JSON.stringify(detail);
+            }
+            throw new Error(detail || `Server error (${res.status})`);
         }
 
         // Clear typing indicator; start streaming
