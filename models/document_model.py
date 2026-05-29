@@ -40,6 +40,8 @@ class DocumentUploadResponse(BaseModel):
     document_id: str = Field(..., description="Unique identifier for the uploaded document")
     source_file: str = Field(..., description="Name of the uploaded file")
     total_chunks: int = Field(..., description="Total number of chunks created from the document")
+    processed_chunks: int = Field(default=0, description="Number of chunks processed so far")
+    status: str = Field(default="processing", description="Current processing status")
     uploaded_at: datetime = Field(..., description="Timestamp of document upload")
 
     model_config = ConfigDict(populate_by_name=True)
@@ -47,7 +49,9 @@ class DocumentUploadResponse(BaseModel):
 class DocumentListItem(BaseModel):
     document_id: str = Field(..., description="Unique identifier for the document")
     source_file: str = Field(..., description="Name of the source file")
-    chunk_count: int = Field(..., description="Number of chunks associated with the document")
+    chunk_count: int = Field(..., description="Total number of chunks")
+    processed_chunks: int = Field(..., description="Number of chunks processed")
+    status: str = Field(..., description="Current processing status")
     created_at: datetime = Field(..., description="Timestamp of document creation")
 
     model_config = ConfigDict(populate_by_name=True)

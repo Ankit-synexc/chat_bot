@@ -7,7 +7,7 @@ from models.document_model import DocumentUploadResponse, DocumentListItem, Dele
 from ml_core.pdf_parser import extract_text
 from ml_core.chunker import chunk_text
 from ml_core.embedder import embedder
-from services.document_service import insert_chunks, get_all_documents, delete_document, delete_all_documents
+from services.document_service import insert_chunks, get_all_documents, delete_document, delete_all_documents, create_document_record, update_document_progress
 from utils.file_utils import validate_file
 from config.settings import settings
 
@@ -15,14 +15,22 @@ logger = logging.getLogger(__name__)
 async def process_chunks_background(document_id: str, filename: str, chunks: List[str]):
     try:
         logger.info(f"Background task started for {filename}. Generating embeddings for {len(chunks)} chunks...")
-        # 4. Embed all chunks
-        embeddings = embedder.embed_batch(chunks)
+        batch_size = 4
+        processed = 0
         
-        # 5. Insert to MongoDB
-        inserted_count = await insert_chunks(document_id, filename, chunks, embeddings)
-        logger.info(f"Background upload completed for document_id: {document_id}, source_file: {filename}, chunks: {inserted_count}")
+        for i in range(0, len(chunks), batch_size):
+            batch_chunks = chunks[i:i + batch_size]
+            embeddings = embedder.embed_batch(batch_chunks, batch_size=batch_size)
+            await insert_chunks(document_id, filename, batch_chunks, embeddings, start_index=i)
+            
+            processed += len(batch_chunks)
+            await update_document_progress(document_id, processed, "processing")
+            
+        await update_document_progress(document_id, processed, "completed")
+        logger.info(f"Background upload completed for document_id: {document_id}, source_file: {filename}")
     except Exception as e:
         logger.error(f"Background processing error for {filename}: {e}")
+        await update_document_progress(document_id, processed, "error")
 
 async def upload_document(file: UploadFile, admin_id: str, background_tasks: BackgroundTasks) -> DocumentUploadResponse:
     try:
@@ -49,6 +57,9 @@ async def upload_document(file: UploadFile, admin_id: str, background_tasks: Bac
             
         document_id = str(uuid.uuid4())
         
+        # 4. Save document record as processing
+        await create_document_record(document_id, file.filename, len(chunks))
+        
         # Queue the slow parts (ML embedding + DB insert) to the background
         background_tasks.add_task(process_chunks_background, document_id, file.filename, chunks)
         
@@ -59,6 +70,8 @@ async def upload_document(file: UploadFile, admin_id: str, background_tasks: Bac
             document_id=document_id,
             source_file=file.filename,
             total_chunks=len(chunks),
+            processed_chunks=0,
+            status="processing",
             uploaded_at=datetime.now(timezone.utc)
         )
         

@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     DB_NAME: str
     CHUNKS_COLLECTION: str
     HISTORY_COLLECTION: str
+    DOCUMENTS_COLLECTION: str = "documents"
 
     # Groq Config
     GROQ_API_KEY: str
