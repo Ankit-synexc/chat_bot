@@ -3,106 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synexc AI - Enterprise Knowledge Chatbot</title>
+    <title>Synexc AI — Intelligent Knowledge Assistant</title>
+    <meta name="description" content="Ask questions and get intelligent answers powered by Synexc AI's knowledge base.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Auth Screen -->
-    <div id="auth-screen" class="screen active">
-        <div class="auth-container glass-panel">
-            <div class="auth-header">
-                <h2>Synexc AI</h2>
-                <p>Sign in to your enterprise knowledge portal</p>
-            </div>
-            <form id="auth-form">
-                <div class="input-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" required>
-                </div>
-                <button type="submit" class="btn btn-primary" id="login-btn">Login</button>
-                <button type="button" class="btn btn-secondary" id="register-btn">Register</button>
-            </form>
-            <div id="auth-error" class="error-message"></div>
-        </div>
-    </div>
+    <div class="app-wrapper">
 
-    <!-- Main App Screen -->
-    <div id="app-screen" class="screen">
+        <!-- Header -->
         <header class="app-header">
-            <div class="logo">
-                <h2>Synexc AI</h2>
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>Synexc AI</h1>
+                    <span class="tagline">Intelligent Knowledge Assistant</span>
+                </div>
             </div>
-            <nav class="app-nav">
-                <button class="nav-btn active" id="nav-chat">Chat</button>
-                <button class="nav-btn hidden" id="nav-admin">Admin Dashboard</button>
-            </nav>
-            <div class="user-controls">
-                <span id="user-greeting">Hello, User</span>
-                <button id="logout-btn" class="btn btn-small btn-secondary">Logout</button>
-            </div>
+            <button class="new-chat-btn" id="new-chat-btn" title="Start new conversation">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                New Chat
+            </button>
         </header>
 
-        <main class="app-main">
-            <!-- Chat Interface -->
-            <section id="chat-section" class="view-section active">
-                <div class="chat-container">
-                    <div id="chat-history" class="chat-history">
-                        <div class="message system-message">
-                            <div class="message-content">
-                                Welcome to the Synexc AI Knowledge Portal. How can I assist you today?
-                            </div>
-                        </div>
-                    </div>
-                    <form id="chat-form" class="chat-input-area">
-                        <textarea id="chat-input" placeholder="Ask a question..." rows="1"></textarea>
-                        <button type="submit" class="btn btn-primary send-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                        </button>
-                    </form>
-                </div>
-            </section>
+        <!-- Chat Area -->
+        <main class="chat-area" id="chat-area">
 
-            <!-- Admin Interface -->
-            <section id="admin-section" class="view-section">
-                <div class="admin-container">
-                    <div class="admin-header">
-                        <h2>Document Management</h2>
-                        <p>Upload and manage knowledge base documents.</p>
-                    </div>
-
-                    <div class="admin-grid">
-                        <div class="admin-card glass-panel">
-                            <h3>Upload Document</h3>
-                            <form id="upload-form">
-                                <div class="file-input-wrapper">
-                                    <input type="file" id="document-file" accept=".pdf,.txt,.docx" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary" id="upload-btn">Upload to Knowledge Base</button>
-                            </form>
-                            <div id="upload-status"></div>
-                        </div>
-                        
-                        <div class="admin-card glass-panel">
-                            <h3>Document Index</h3>
-                            <button class="btn btn-secondary btn-small mb-4" id="refresh-docs-btn">Refresh List</button>
-                            <ul id="document-list" class="document-list">
-                                <!-- Documents populated by JS -->
-                            </ul>
-                        </div>
-                    </div>
+            <!-- Welcome screen shown when no messages -->
+            <div class="welcome-screen" id="welcome-screen">
+                <div class="welcome-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
                 </div>
-            </section>
+                <h2>How can I help you today?</h2>
+                <p>Ask me anything from the knowledge base. I'll find the most relevant information for you.</p>
+                <div class="suggestion-chips">
+                    <button class="chip" data-question="What services does this company offer?">What services does this company offer?</button>
+                    <button class="chip" data-question="Tell me about the team">Tell me about the team</button>
+                    <button class="chip" data-question="What technologies are used?">What technologies are used?</button>
+                </div>
+            </div>
+
+            <!-- Messages rendered here -->
+            <div class="messages-container" id="messages-container"></div>
+
         </main>
+
+        <!-- Input Area -->
+        <footer class="input-area">
+            <form id="chat-form" class="input-form">
+                <div class="input-wrapper">
+                    <textarea id="chat-input" placeholder="Type your question..." rows="1" autocomplete="off"></textarea>
+                    <button type="submit" class="send-btn" id="send-btn" title="Send message" disabled>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"/>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                    </button>
+                </div>
+                <p class="disclaimer">Synexc AI may make mistakes. Verify important information.</p>
+            </form>
+        </footer>
+
     </div>
 
-    <!-- Include marked for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="app.js"></script>
 </body>
