@@ -30,12 +30,18 @@ class Embedder:
         embeddings = self._model.encode(text, normalize_embeddings=True)
         return embeddings.tolist()
 
-    def embed_batch(self, texts: List[str], batch_size: int = 32) -> List[List[float]]:
+    def embed_batch(self, texts: List[str], batch_size: int = 4) -> List[List[float]]:
         self._load_model()
         if not texts:
             return []
-        embeddings = self._model.encode(texts, batch_size=batch_size, normalize_embeddings=True)
-        return embeddings.tolist()
+        logger.info(f"Starting batch embedding of {len(texts)} chunks with batch_size={batch_size}...")
+        try:
+            embeddings = self._model.encode(texts, batch_size=batch_size, normalize_embeddings=True, show_progress_bar=False)
+            logger.info("Batch embedding completed successfully.")
+            return embeddings.tolist()
+        except Exception as e:
+            logger.error(f"Error during batch encoding: {e}")
+            raise
 
     def is_loaded(self) -> bool:
         return self._model is not None

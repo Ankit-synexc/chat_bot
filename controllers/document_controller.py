@@ -2,7 +2,7 @@ import logging
 import uuid
 from datetime import datetime, timezone
 from typing import List
-from fastapi import UploadFile, HTTPException, status
+from fastapi import UploadFile, HTTPException, status, BackgroundTasks
 from models.document_model import DocumentUploadResponse, DocumentListItem, DeleteDocumentResponse, DeleteAllDocumentsResponse
 from ml_core.pdf_parser import extract_text
 from ml_core.chunker import chunk_text
@@ -12,8 +12,19 @@ from utils.file_utils import validate_file
 from config.settings import settings
 
 logger = logging.getLogger(__name__)
+async def process_chunks_background(document_id: str, filename: str, chunks: List[str]):
+    try:
+        logger.info(f"Background task started for {filename}. Generating embeddings for {len(chunks)} chunks...")
+        # 4. Embed all chunks
+        embeddings = embedder.embed_batch(chunks)
+        
+        # 5. Insert to MongoDB
+        inserted_count = await insert_chunks(document_id, filename, chunks, embeddings)
+        logger.info(f"Background upload completed for document_id: {document_id}, source_file: {filename}, chunks: {inserted_count}")
+    except Exception as e:
+        logger.error(f"Background processing error for {filename}: {e}")
 
-async def upload_document(file: UploadFile, admin_id: str) -> DocumentUploadResponse:
+async def upload_document(file: UploadFile, admin_id: str, background_tasks: BackgroundTasks) -> DocumentUploadResponse:
     try:
         # 1. Validate file type and size
         try:
@@ -36,21 +47,18 @@ async def upload_document(file: UploadFile, admin_id: str) -> DocumentUploadResp
         if not chunks:
             raise HTTPException(status_code=400, detail="No extractable text found in document")
             
-        # 4. Embed all chunks
-        embeddings = embedder.embed_batch(chunks)
-        
-        # 5. Insert to MongoDB
         document_id = str(uuid.uuid4())
-        inserted_count = await insert_chunks(document_id, file.filename, chunks, embeddings)
         
-        # Logging requirement
-        logger.info(f"Uploaded document_id: {document_id}, source_file: {file.filename}, chunks: {inserted_count}")
+        # Queue the slow parts (ML embedding + DB insert) to the background
+        background_tasks.add_task(process_chunks_background, document_id, file.filename, chunks)
         
-        # 6. Return response
+        logger.info(f"Queued background processing for document_id: {document_id}, source_file: {file.filename}, chunks: {len(chunks)}")
+        
+        # 6. Return response immediately
         return DocumentUploadResponse(
             document_id=document_id,
             source_file=file.filename,
-            total_chunks=inserted_count,
+            total_chunks=len(chunks),
             uploaded_at=datetime.now(timezone.utc)
         )
         

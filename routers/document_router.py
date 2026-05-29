@@ -16,10 +16,12 @@ from controllers.document_controller import (
 router = APIRouter(prefix="/api/v1/documents", tags=["admin"])
 
 
+from fastapi import APIRouter, UploadFile, File, BackgroundTasks
+
 @router.post("/upload", response_model=DocumentUploadResponse)
-async def upload_document_route(file: UploadFile = File(...)):
+async def upload_document_route(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
     """Upload a PDF, TXT, or DOCX file into the knowledge base (admin — use via Swagger)."""
-    return await upload_document(file, "admin")
+    return await upload_document(file, "admin", background_tasks)
 
 
 @router.get("", response_model=List[DocumentListItem])
