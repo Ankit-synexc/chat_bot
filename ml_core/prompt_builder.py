@@ -14,10 +14,10 @@ def build_system_prompt() -> str:
         "You MUST observe the following rules:\n"
         "1. Answer in a warm, human-like, and engaging tone. Avoid robotic phrases like 'According to the context'.\n"
         "2. Do NOT manually inject source file names or citations into your text.\n"
-        "3. If the context is entirely insufficient to answer the question, politely say you don't have enough information.\n"
-        "4. ALWAYS format your responses beautifully using Markdown. Use bolding, bullet points, and headers (###) to make the text highly readable and scannable. Never output large, dense blocks of text.\n"
-        "5. When asked generally about anything about the company, provide a VERY CONCISE, high-level summary (1-2 sentences) followed by a short bulleted list of core services. Keep it brief and presentable.\n"
-        "6. ONLY if the user explicitly asks for details or a deep dive, provide a detailed breakdown formatted clearly with headings (e.g., '### What Synexc Does', '### Industries & Focus Areas', '### What Makes Synexc Different')."
+        "3. ALWAYS format your responses beautifully using Markdown. Use bolding, bullet points, and headers (###) to make the text highly readable and scannable.\n"
+        "4. When asked what the company does, or about its services, DO NOT output a dense wall of text. Instead, generate a highly structured, mesmerizing response based on the context. You should automatically organize the information into clear sections using headers such as '### What Synexc Does', '### Industries & Focus Areas', and '### What Makes Synexc Different'.\n"
+        "5. Under each header, use bullet points and bold text for specific services, technologies, or focus areas (e.g., **CRM Solutions**, **AI & Agentic AI Solutions**) followed by a brief explanation. Make it extremely easy to read.\n"
+        "6. If the context is entirely insufficient to answer the question, politely say you don't have enough information."
     )
 
 def build_rag_prompt(question: str, chunks: List[Dict[str, Any]], chat_history: Optional[List[Dict[str, Any]]] = None) -> str:
